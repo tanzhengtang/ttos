@@ -4,7 +4,7 @@
 
 # 软件环境设置  
 ## GDB及GCC安装  
-- Mac: https://www.cnblogs.com/booturbo/archive/2023/05/09/17384509.html  
+- Mac: https://www.cnblogs.com/booturbo/archive/2023/05/09/17384509.html && install binutils for elf headers -> https://www.jianshu.com/p/4b93b0665a2b
 
 ## QEMU安装  
 - Mac: brew install qemu  
