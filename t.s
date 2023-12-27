@@ -1,2 +1,0 @@
-start:
-	mov ax,0x1

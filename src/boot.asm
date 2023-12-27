@@ -60,7 +60,7 @@ WaitOutbufFull:
             test al, 01             ;读取Status Register
             jz WaitOutbufFull
             ret
-  
+ 
 GDT:
 GDT_NULL:   dd 0,0
 GDT_CODE:   Dtp GCD_DES, GCD_LIMIT, DR_32 + DR_CRW    
