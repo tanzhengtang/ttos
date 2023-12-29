@@ -1,11 +1,14 @@
-CFLAGS = -fno-pie -no-pie -fno-pic -static -fno-builtin -fno-strict-aliasing  -Wall -MD -ggdb -m32 -Werror -fno-omit-frame-pointer -O2 -march=i386 -masm=intel -fno-pic -nostdinc
+CFLAGS = -fno-pie -fno-pic -static -fno-builtin -fno-strict-aliasing  -Wall -MD -ggdb -m32 -Werror -fno-omit-frame-pointer -O2 -march=i386 -masm=intel -fno-pic -nostdinc
+CC = i386-jos-elf-gcc
+LD = i386-jos-elf-ld
+LFLAGS = -m elf_i386
 
-a: t1.c t1s.o
-	gcc $(CFLAGS) t1.c -o t1c.o
-	ld -melf_i386 t1s.o t1c.o -o a -e _start
+test: test.c
+	$(CC) $(CFLAGS) -c test.c -o test.o
+	$(LD) $(LFLAGS) -N -Ttext 0x7c00 test.o -o test
 
-t1s.o: t1.asm
-	nasm -felf32 t1.asm -o t1s.o
+boot.o: boot.asm
+	nasm -M -g -felf32 boot.asm -o boot.o
 
 .PRECIOUS: 
 QEMU = qemu-system-i386

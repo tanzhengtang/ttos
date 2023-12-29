@@ -1,5 +1,6 @@
 %include "boot.inc"
-
+global start 
+extern tee
 start:
     cli
     cld
@@ -8,6 +9,7 @@ start:
     mov es,ax
     mov ds,ax
     mov ss,ax
+    call tee
 
 A20Enable:
     call WaitInbufEmpty    ;2.等待8042 Input buffer为空；
