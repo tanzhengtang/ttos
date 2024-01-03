@@ -1,6 +1,6 @@
 %include "boot.inc"
 global start 
-extern tee
+extern disk_main
 start:
     cli
     cld
@@ -49,20 +49,9 @@ Pr_enable:
 Pat_Enable:
     xor ax, ax
 
-WaitInbufEmpty:
-            mov dx, 64h
-            in al, dx               ;读取Status Register
-            test al, 02h   ;测试第2bit是否为1，1表示还有数据在缓冲区
-            jnz WaitInbufEmpty  ;zf=0，运算结果非0，即逻辑与为1
-            ret
+bootc:
+    call disk_main
 
-WaitOutbufFull:
-            mov dx, 64h
-            in al, dx
-            test al, 01             ;读取Status Register
-            jz WaitOutbufFull
-            ret
- 
 GDT:
 GDT_NULL:   dd 0,0
 GDT_CODE:   Dtp GCD_DES, GCD_LIMIT, DR_32 + DR_CRW    
@@ -71,5 +60,3 @@ GDT_DATA:   Dtp GCD_DES, GCD_LIMIT, DR_32 + DR_DRW
 GDT_DES:
 dw GDT_DES - GDT - 1 ;size of gdt, why minus 1, becuase of null gdt.
 dd GDT ;start address of gdt
-
-%include "mbr_tail.inc"

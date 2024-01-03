@@ -7,25 +7,32 @@ u16 wait_disk(void){
    u16 res = inb((u16)DISK_PORT_STATUS);
    return res & DISK_SM_BSY;
 }
-void Rdata_disk(u16 sec_num, u16 disk_addr, u16* mem_addr){
+
+void readsec(u16* ma, u16 da){
    u8 c = 0;
-   otb(sec_num,(u16)DISK_PORT_SC);
+   otb(1,(u16)DISK_PORT_SC);
    otb((u16)DISK_ADDRESS,(u16)DISK_PORT_LBA_LOW); // 写入扇区起始地址
-   otb(disk_addr >> 8,(u16)DISK_PORT_LBA_MID);
-   otb(disk_addr>> 8,(u16)DISK_PORT_LBA_HIGH);
-   otb((disk_addr >> 4) | DISK_DEVICE_LBA_CODE,(u16)DISK_PORT_DEVICE);
+   otb(da >> 8,(u16)DISK_PORT_LBA_MID);
+   otb(da >> 8,(u16)DISK_PORT_LBA_HIGH);
+   otb((da >> 4) | DISK_DEVICE_LBA_CODE,(u16)DISK_PORT_DEVICE);
+   otb((u16)DISK_PORT_STATUS, (u16)DISK_READ_DATA);
    while (!wait_disk())
    {
-      *(mem_addr + c) = inb(DISK_PORT_DATA);
+      *(ma + 2*c) = inb(DISK_PORT_DATA);
       c++;
-      if( c == 255){
+      if(c == 256){
          break;
       }
    }
 }
 
-void disk_main()
+void readseg(u16* ma, u16 da, u16 byte)
 {
-   Rdata_disk((u16)(0x1), (u16)(0x0), (u16*)(0x7c00));
+   u16* ema = ma + byte;
+   for (; ma < ema; da++)
+   {
+      readsec(ma, da);
+      ma = ma + DISK_SIZE;
+   }
    return ;
-}
+};

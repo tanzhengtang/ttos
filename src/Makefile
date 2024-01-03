@@ -3,30 +3,34 @@ CC = i386-jos-elf-gcc
 LD = i386-jos-elf-ld
 LFLAGS = -m elf_i386
 
-test: test.c
-	$(CC) $(CFLAGS) -c test.c -o test.o
-	$(LD) $(LFLAGS) -N -Ttext 0x7c00 test.o -o test
+ttos.img: bootblock kernel
+	dd if=/dev/zero of=ttos.img count=10000
+	dd if=bootblock of=ttos.img conv=notrunc
+	dd if=kernel of=ttos.img seek=1 conv=notrunc  
 
-boot.o: boot.asm
-	nasm -M -g -felf32 boot.asm -o boot.o
+bootblock: boot.c boota.asm sign
+	nasm -M -g -felf32 boot.asm -o boota.o 
+	$(CC) $(CFLAGS) -c boot.c -o bootc.o
+	$(LD) $(LFLAGS) -N -e start -Ttext 0x7c00 boota.o bootc.o -o bootblock.o 
+	$(OBJCOPY) -S -O binary -j .text bootblock.o bootblock
+	./sign bootblock
+
+kernel: 
+	echo 1111 > kernel
+
+sign: sign.c
+	gcc sign.c -o sign	
 
 .PRECIOUS: 
 QEMU = qemu-system-i386
 
-QEMUOPTS = -drive file=tt.img,index=0,media=disk,format=raw -smp 2 -m 512
+QEMUOPTS = -drive file=ttos.img,index=0,media=disk,format=raw -smp 2 -m 512
 GDBPORT = $(shell expr `id -u` % 5000 + 25000)
 
 QEMUGDB = $(shell if $(QEMU) -help | grep -q '^-gdb';then echo "-gdb tcp::$(GDBPORT)";else echo "-s -p $(GDBPORT)"; fi)
 
-qemu-nox-gdb: tt.img sign
+qemu-nox-gdb: ttos.img sign
 	$(QEMU) -nographic $(QEMUOPTS) -S $(QEMUGDB)
-
-tt.img: tt.asm
-	nasm -fbin tt.asm -o tt.img
-	./sign tt.img
-
-sign: sign.c
-	gcc sign.c -o sign
 
 $(info SOURCES variable is: $(QEMUGDB))
 

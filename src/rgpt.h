@@ -27,4 +27,5 @@
 #define DISK_SM_DRQ 0b00000100 //表示硬盘已经准备好数据，随时可以输出
 #define DISK_SM_ERR 0b00000001 //表示有错误发生，错误信息见error寄存器
 
+#define DISK_SIZE 512
 #endif
