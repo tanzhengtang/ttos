@@ -1,6 +1,8 @@
 %include "boot.inc"
 global start 
-extern disk_main
+extern readmain
+
+BITS 16
 start:
     cli
     cld
@@ -44,13 +46,15 @@ Pr_enable:
     or eax, CR0_PE
     mov cr0, eax
     
-    jmp GDT_CODE - GDT - 1:Pat_Enable
+    jmp dword GDT_CODE - GDT - 1:Pat_Enable ; Page 172 - 173. 
 
+
+BITS 32
 Pat_Enable:
     xor ax, ax
 
 bootc:
-    call disk_main
+    call readmain
 
 GDT:
 GDT_NULL:   dd 0,0

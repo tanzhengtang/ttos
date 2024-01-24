@@ -1,6 +1,6 @@
 #include<stdio.h>
 #include<string.h>
-//补充mbr末尾部分以达到512字节。注意最后2字节为0x55AA.
+
 int main(int argc, char *argv[]){
     if(argc == 1){
             return 1;
