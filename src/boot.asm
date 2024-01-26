@@ -11,34 +11,20 @@ start:
     mov es,ax
     mov ds,ax
     mov ss,ax
-    call tee
 
-A20Enable:
-    call WaitInbufEmpty    ;2.等待8042 Input buffer为空；
-    mov al, 0adh   ;向64h端口发送命令ADH(禁止键盘接口。Command Byte的bit-4被设置。当此命令被发布后，Keyboard将被禁止发送数据到Output Register。)
-    mov dx, 64h
-    out dx, al              ;3.发送禁止键盘操作命令
-    call WaitInbufEmpty    ;4.等待8042 Input buffer为空；
-    mov al, 0d0h
-    mov dx, 64h
-    out dx, al              ;5.发送读取8042 Output Port命令；
-    call WaitOutbufFull     ;6.等待8042 Output buffer有数据；
-    mov dx, 60h
-    in al, dx               ;7.读取8042 Output buffer
-    push ax                 ;保存读取的数据
-    call WaitInbufEmpty     ;8.等待8042 Input buffer为空；
-    mov al, 0d1h
-    mov dx, 64h
-    out dx, al              ;9.发送写 8042 Output Port命令
-    call WaitInbufEmpty     ;10.等待8042 Input buffer为空
-    pop ax
-    or al, 02h              ;11.将从8042 Output Port得到的字节的bit 1置1
-    mov dx, 60h
-    out dx, al              ;写入Output Port
-    call WaitInbufEmpty    ;12.等待8042 Input buffer为空
-    mov al, 0aeh
-    mov dx, 64h
-    out dx, al              ;13.发送允许键盘操作命令
+enable_a20:
+    wait_for_kbd_ready:
+        in al, 0x64       
+        test al, 2        
+        jnz wait_for_kbd_ready  
+    mov al, 0xd1        
+    out 0x64, al        
+    wait_for_kbd_ready_2:
+        in al, 0x64     
+        test al, 2       
+        jnz wait_for_kbd_ready_2 
+    mov al, 0xdf       
+    out 0x60, al        
 
 Pr_enable:
     lgdt [GDT_DES]
@@ -51,7 +37,7 @@ Pr_enable:
 
 BITS 32
 Pat_Enable:
-    xor ax, ax
+    xor eax, eax
 
 bootc:
     call readmain

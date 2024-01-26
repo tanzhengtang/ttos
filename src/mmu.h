@@ -1,6 +1,7 @@
 #ifndef mmu_h
 #define mmu_h
-// Protected mode descriptor table in 163 page
+// Protected mode about descriptor table in 163 page
+// descriptor seg
 typedef struct {
         unsigned lim_15_0 : 16;  // Low bits of segment limit
         unsigned base_15_0 : 16; // Low bits of segment base address
@@ -16,24 +17,79 @@ typedef struct {
         unsigned g : 1;          // Granularity: limit scaled by 4K when set
         unsigned base_31_24 : 8; // High bits of segment base address
 } DPS;
-// 描述符表 48位
+// descriptor table 48 bits
     typedef struct {
-        unsigned limt : 16;  //GDT的大小。
-        unsigned add_s : 32;  //GDT的起始位置。
+        unsigned limt : 16;  //GDT size。
+        unsigned add_s : 32;  //descriptor seg init address。
     } GDT;
-// 选择子
+// selector 16 bits
     typedef struct {        
-        unsigned rpl : 2; //请求特权级
+        unsigned rpl : 2; //Privilege
         unsigned ti : 1; // 0 for gdt, 1 for ldt
         unsigned index : 13; //index for DPS in memory
     } SL;
 
-#define SEG(type, base, lim, dpl) (DPS){ \ 
+
+#define SEG(type, base, lim, dpl) (DPS){ \
             ((lim >> 12) & 0xffff), (unsigned)(base & 0xffff),\
-            (unit)((base >> 16) & 0xff), type, 0, dpl, \ 
+            (unit)((base >> 16) & 0xff), type, 0, dpl, \
             1, (lim >> 28), 0, 0, 1, 1, (base >> 24)};
-#define SEG16(type, base, lim, dpl) (DPS){ \ 
+
+#define SEG16(type, base, lim, dpl) (DPS){ \
             ((lim >> 12) & 0xffff), (unsigned)(base & 0xffff),\
-            (unit)((base >> 16) & 0xff), type, 0, dpl, \ 
+            (unit)((base >> 16) & 0xff), type, 0, dpl, \
             1, (lim >> 28), 0, 0, 1, 0, (base >> 24)};
+
+
+// Page Table Entry & Page Dir Entry Page 207
+typedef struct 
+{
+    unsigned p : 1; 
+    unsigned rw : 1;
+    unsigned us : 1;
+    unsigned pwt : 1;
+    unsigned pcd : 1;
+    unsigned a : 1;
+    unsigned r : 1; // Reserved
+    unsigned ps : 1; // 0 indicates 4KB.
+    unsigned g : 1;
+    unsigned avl : 3;
+    unsigned addr : 20;
+} PDE;
+
+typedef struct 
+{
+    unsigned p : 1; 
+    unsigned rw : 1;
+    unsigned us : 1;
+    unsigned pwt : 1;
+    unsigned pcd : 1;
+    unsigned a : 1;
+    unsigned d : 1; // dirty 
+    unsigned pat : 1; 
+    unsigned g : 1;
+    unsigned avl : 3;
+    unsigned addr : 20;
+} PTE;
+
+#define PG_P 0b1 
+#define PG_RW_R 0
+#define PG_RW_W 0b1
+#define PG_US_S 0
+#define PG_US_U 0b1
+
+typedef struct
+{   
+    unsigned r1 : 3; // Reserved
+    unsigned pwt : 1;
+    unsigned pcd : 1;
+    unsigned r2 : 7; // Reserved
+    unsigned pdr : 20; //PDE address 12-32 bits.
+} cr3;
+
+// Control Register flags
+#define CR0_PE 0x00000001 //start protect mode
+#define CR0_PG 0x80000000 //start page mode
+#define CR0_WP 0x00001000 //start write protect mode
+
 #endif

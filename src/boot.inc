@@ -19,6 +19,7 @@ CR0_PE equ 0x00000001; protection enable
 ; %1 for address base 32 bits
 ; %2 for limit of mem 20bits
 ; %3 for all attr of descriptor 12bits
+
 %macro Dtp 3 
     dw (%2 & 0x0ffff) ; 0 - 15 for 0 - 15 of limit bits
     dw (%1 & 0x0000ffff); 16 - 31 for 0 - 15 of address base bits
@@ -27,6 +28,7 @@ CR0_PE equ 0x00000001; protection enable
     db (%2 >> 16) | (( 0xf00 & %3 ) >> 4) ; 48 - 55 bits, first 4 bits for the limit bits and second 4 bits for the attr bits.
     db (%1 >> 24) ; 56 - 63 for the last 8 bits for address base
 %endmacro
+
 ;
 GCD_DES equ 0
 GCD_LIMIT equ 0xfffff

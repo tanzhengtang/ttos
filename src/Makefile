@@ -44,7 +44,7 @@ ttos.img: bootblock kernel
 	dd if=kernel of=ttos.img seek=1 conv=notrunc  
 
 bootblock: boot.c boot.asm sign
-	nasm -M -g -felf32 boot.asm -o boota.o 
+	nasm -g -felf32 boot.asm -o boota.o 
 	$(CC) $(CFLAGS) -c boot.c -o bootc.o
 	$(LD) $(LFLAGS) -N -e start -Ttext 0x7c00 boota.o bootc.o -o bootblock.o 
 	$(OBJCOPY) -S -O binary -j .text bootblock.o bootblock

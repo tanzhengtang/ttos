@@ -1,11 +1,13 @@
 #include"x86_intel.h"
 #include"rgpt.h"
 // init address is 0.
+
 #define DISK_SECTOR_NUMS 0x01
 #define DISK_START_ADDRESS 0x0000000
 #define KERNEL_DISK_START_ADDRESS DISK_START_ADDRESS + 1
 #define KERNEL_MEM_ADDRESS 0x9000
 #define KERNEL_SIZE 1024
+
 u16 wait_disk(void){
    u16 res = inb((u16)DISK_PORT_STATUS);
    return res & DISK_SM_BSY;
@@ -42,5 +44,10 @@ void readseg(u16* ma, u16 da, u16 byte)
 
 void readmain(){
    readseg((u16 *)KERNEL_DISK_START_ADDRESS, (u16)KERNEL_MEM_ADDRESS, (u16)KERNEL_SIZE);
+   return ;
+}
+
+void pat_set(){
+   
    return ;
 }

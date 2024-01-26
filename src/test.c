@@ -1,10 +1,9 @@
-#include<stdio.h>
-#include"mmu.h"
+// #include<stdio.h>
+#include"mmu.h" 
+#define KERNEL_BASE_ADDR 
+// target: low 1 GB map to high 1GB
 int main(){
-    short t = 0xfe13;
-    char* c = (char *)&t;
-    printf("%p\n", c);
-    printf("%#x\n", *c);
-    printf("%02x\n", *(++c));
-    printf("%02x\n", *(++c));
+    int * a = (int *)(0x100000);
+    *a = 1;
+    return 1;
 }
