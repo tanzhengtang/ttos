@@ -36,3 +36,15 @@ GCD_LIMIT equ 0xfffff
 DR_32 equ 0xc00 ; 1100B G,D/B,L,AVL
 DR_CRW equ 0x9a ; 10011010B 代码段 TYPE(4),S(1),DPL(2),P(1)
 DR_DRW equ 0x92 ; 10010010B 数据段 TYPE(4),S(1),DPL(2),P(1)
+
+GDT:
+GDT_NULL:   dd 0,0
+GDT_KCODE:   Dtp GCD_DES, GCD_LIMIT, DR_32 + DR_CRW    
+GDT_KDATA:   Dtp GCD_DES, GCD_LIMIT, DR_32 + DR_DRW
+    
+GDT_DES:
+dw GDT_DES - GDT - 1 ;size of gdt, why minus 1, becuase of null gdt.
+dd GDT ;start address of gdt
+
+KCODE equ 1
+KDATA equ 2

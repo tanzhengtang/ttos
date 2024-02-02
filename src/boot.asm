@@ -32,21 +32,20 @@ Pr_enable:
     or eax, CR0_PE
     mov cr0, eax
     
-    jmp dword GDT_CODE - GDT - 1:Pat_Enable ; Page 172 - 173. 
+    jmp dword KCODE<<3:Pat_Enable ; Page 172 - 173. 
 
 
 BITS 32
 Pat_Enable:
     xor eax, eax
+    mov eax, KDATA<<3
+    mov ds, eax
+    mov ss, eax
+    mov es, eax 
+    mov esp, start
 
 bootc:
     call readmain
 
-GDT:
-GDT_NULL:   dd 0,0
-GDT_CODE:   Dtp GCD_DES, GCD_LIMIT, DR_32 + DR_CRW    
-GDT_DATA:   Dtp GCD_DES, GCD_LIMIT, DR_32 + DR_DRW
-    
-GDT_DES:
-dw GDT_DES - GDT - 1 ;size of gdt, why minus 1, becuase of null gdt.
-dd GDT ;start address of gdt
+spin:
+    jmp  spin

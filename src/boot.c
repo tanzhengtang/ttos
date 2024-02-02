@@ -1,5 +1,6 @@
 #include"x86_intel.h"
 #include"rgpt.h"
+#include"mmu.h"
 // init address is 0.
 
 #define DISK_SECTOR_NUMS 0x01
@@ -47,7 +48,8 @@ void readmain(){
    return ;
 }
 
-void pat_set(){
-   
+void pat_set(u32 addr){
+   PDE* p = (PDE*)(PDE_Phy_Adr); 
+   *p = PTDE(0, 0, 0, 0, addr);
    return ;
 }

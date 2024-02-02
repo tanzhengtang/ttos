@@ -78,6 +78,11 @@ typedef struct
 #define PG_US_S 0
 #define PG_US_U 0b1
 
+#define PTDE(p, rw, us, avl, addr) (PDE){\
+    0, rw, us, 0, 0, 0, 0, 0, 0, \
+    avl, addr \
+};
+
 typedef struct
 {   
     unsigned r1 : 3; // Reserved
@@ -85,11 +90,19 @@ typedef struct
     unsigned pcd : 1;
     unsigned r2 : 7; // Reserved
     unsigned pdr : 20; //PDE address 12-32 bits.
-} cr3;
+} CR3;
 
 // Control Register flags
 #define CR0_PE 0x00000001 //start protect mode
 #define CR0_PG 0x80000000 //start page mode
-#define CR0_WP 0x00001000 //start write protect mode
+#define CR0_WP 0x00010000 //start write protect mode
+
+#define NPDENTRIES      1024    // # directory entries per page directory
+#define NPTENTRIES      1024    // # PTEs per page table
+
+#define PDE_Phy_Adr 0x00100000 //PDE Start Physical Address
+#define PTE_Phy_Adr (PDE_Phy_Adr + NPDENTRIES*4)  
+#define PTE_Phy_End_Adr (PTE_Phy_Adr + (NPDENTRIES*NPTENTRIES*4))
+
 
 #endif

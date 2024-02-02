@@ -1,9 +1,15 @@
-// #include<stdio.h>
+#include<stdio.h>
 #include"mmu.h" 
-#define KERNEL_BASE_ADDR 
 // target: low 1 GB map to high 1GB
+typedef struct 
+{
+    unsigned d : 1;
+    /* data */
+}PT;
+
 int main(){
-    int * a = (int *)(0x100000);
-    *a = 1;
+    PT* p = (PT *)(0x100000);
+    *p = (PT){1};
+    printf("%d", p->d);
     return 1;
 }
