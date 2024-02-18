@@ -1,6 +1,7 @@
 %include "boot.inc"
 global start 
 extern readmain
+extern pat_set
 
 BITS 16
 start:

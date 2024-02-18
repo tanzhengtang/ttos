@@ -29,17 +29,15 @@ typedef struct {
         unsigned index : 13; //index for DPS in memory
     } SL;
 
-
 #define SEG(type, base, lim, dpl) (DPS){ \
             ((lim >> 12) & 0xffff), (unsigned)(base & 0xffff),\
-            (unit)((base >> 16) & 0xff), type, 0, dpl, \
+            (unsigned)((base >> 16) & 0xff), type, 0, dpl, \
             1, (lim >> 28), 0, 0, 1, 1, (base >> 24)};
 
 #define SEG16(type, base, lim, dpl) (DPS){ \
             ((lim >> 12) & 0xffff), (unsigned)(base & 0xffff),\
-            (unit)((base >> 16) & 0xff), type, 0, dpl, \
+            (unsigned)((base >> 16) & 0xff), type, 0, dpl, \
             1, (lim >> 28), 0, 0, 1, 0, (base >> 24)};
-
 
 // Page Table Entry & Page Dir Entry Page 207
 typedef struct 
@@ -53,7 +51,7 @@ typedef struct
     unsigned r : 1; // Reserved
     unsigned ps : 1; // 0 indicates 4KB.
     unsigned g : 1;
-    unsigned avl : 3;
+    unsigned avl : 2;
     unsigned addr : 20;
 } PDE;
 
@@ -78,9 +76,10 @@ typedef struct
 #define PG_US_S 0
 #define PG_US_U 0b1
 
+// must explicitly declared same bits numbers.
 #define PTDE(p, rw, us, avl, addr) (PDE){\
     0, rw, us, 0, 0, 0, 0, 0, 0, \
-    avl, addr \
+    avl, (addr & 0xfffff) \
 };
 
 typedef struct
@@ -97,12 +96,15 @@ typedef struct
 #define CR0_PG 0x80000000 //start page mode
 #define CR0_WP 0x00010000 //start write protect mode
 
-#define NPDENTRIES      1024    // # directory entries per page directory
-#define NPTENTRIES      1024    // # PTEs per page table
+#define NPDENTRIES  1024    // # directory entries per page directory
+#define NPTENTRIES  1024    // # PTEs per page table
 
 #define PDE_Phy_Adr 0x00100000 //PDE Start Physical Address
 #define PTE_Phy_Adr (PDE_Phy_Adr + NPDENTRIES*4)  
-#define PTE_Phy_End_Adr (PTE_Phy_Adr + (NPDENTRIES*NPTENTRIES*4))
+#define PTE_Phy_End_Adr (PTE_Phy_Adr + (NPDENTRIES*NPTENTRIES*4))  
+#define PDVR_CODE (1024*1024*4 + PDE_Phy_Adr)
 
+#define KVDR 0xc0000000
+#define KVDR_CODE (KVDR + PDVR_CODE)
 
 #endif

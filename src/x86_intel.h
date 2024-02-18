@@ -3,7 +3,7 @@
 #include "dtyp.h"
 
 static inline u16 inb(u16 port){
-	u16 data = -1;
+	u16 data;
 	asm volatile(
 		"in %0,%1"
 		:"=a"(data) :"d"(port):);
@@ -16,5 +16,6 @@ static inline void otb(u16 data,u16 port){
 		::"a"(data),"d"(port):);
 	return;
 };
+
 
 #endif
