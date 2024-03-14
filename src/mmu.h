@@ -79,7 +79,7 @@ typedef struct
 // must explicitly declared same bits numbers.
 #define PTDE(p, rw, us, avl, addr) (PDE){\
     0, rw, us, 0, 0, 0, 0, 0, 0, \
-    avl, (addr & 0xfffff) \
+    avl, (addr) & 0xfffff \
 };
 
 typedef struct

@@ -51,7 +51,6 @@ void readmain(){
    if(em->e_ident[0] != 0x7f){
       return;
    }
-   
    readseg((u16 *)KERNEL_MEM_ADDRESS, (u16)KERNEL_DISK_START_ADDRESS, (u16)KERNEL_SIZE);
    return ;
 };
